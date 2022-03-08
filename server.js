@@ -1,36 +1,23 @@
 const express = require("express");
-const connect = require('./connect');
+const connect = require("./connect");
 const WilderModel = require("./models/Wilder");
+const WilderControl = require("./controllers/WilderControl");
 const app = express();
 
 // Database connection
 connect();
 
 // Middleware
-app.use(express.urlencoded({ extended : true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-
-// app.get("/", (req, res) => {
-//   res.send("hello world");
-//   WilderModel.init().then(() => {
-//     const firstWilder = new WilderModel({
-//       name: "First Wilder",
-//       city: "San Francisco",
-//       skills: [
-//         { title: "HTML", votes: 10 },
-//         { title: "React", votes: 5 },
-//       ],
-//     });
-//     firstWilder
-//       .save()
-//       .then((result) => {
-//         console.log("success:", result);
-//       })
-//       .catch((err) => {
-//         console.log("error:", err);
-//       });
-//   });
-// });
+// Routes
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
+app.post("/api/wilder/create", WilderControl.create);
+app.get("/api/wilder/read", WilderControl.retrieve);
+app.put("/api/wilder/update", WilderControl.update);
+app.delete("/api/wilder/:id/delete", WilderControl.delete);
 
 app.listen(3000, () => console.log("Server started on 3000"));
