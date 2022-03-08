@@ -12,9 +12,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Routes
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
+app.get("/", (req, res) => res.send("Hello World"));
+
+
 app.post("/api/wilder/create", WilderControl.create);
 app.get("/api/wilder/read", WilderControl.retrieve);
 app.put("/api/wilder/update", WilderControl.update);
