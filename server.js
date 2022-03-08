@@ -1,35 +1,36 @@
 const express = require("express");
-const mongoose = require('mongoose');
-const WilderModel = require('./models/Wilder');
+const connect = require('./connect');
+const WilderModel = require("./models/Wilder");
 const app = express();
 
-mongoose
-.connect("mongodb://127.0.0.1:27017/wilderdb", {
-    autoIndex: true,
-})
-.then(() => console.log("Connected to database"))
-.catch((err) => console.log(err));
+// Database connection
+connect();
 
- app.get("/", (req, res) => {
-     res.send('hello world');
-    //  WilderModel.init().then(() => {
-    //     const firstWilder = new WilderModel({
-    //         name: "First Wilder",
-    //         city: "San Francisco",
-    //         skills: [
-    //             { title: "HTML", votes: 10 },
-    //             { title: "React", votes: 5 },
-    //         ],
-    //     });
-    //     firstWilder
-    //     .save()
-    //     .then((result) => {
-    //         console.log("success:", result);
-    //     })
-    //     .catch((err) => {
-    //         console.log("error:", err);
-    //     });
-    // })
- });
+// Middleware
+app.use(express.urlencoded({ extended : true }));
+app.use(express.json());
 
- app.listen(3000, () => console.log("Server started on 3000"))
+
+// app.get("/", (req, res) => {
+//   res.send("hello world");
+//   WilderModel.init().then(() => {
+//     const firstWilder = new WilderModel({
+//       name: "First Wilder",
+//       city: "San Francisco",
+//       skills: [
+//         { title: "HTML", votes: 10 },
+//         { title: "React", votes: 5 },
+//       ],
+//     });
+//     firstWilder
+//       .save()
+//       .then((result) => {
+//         console.log("success:", result);
+//       })
+//       .catch((err) => {
+//         console.log("error:", err);
+//       });
+//   });
+// });
+
+app.listen(3000, () => console.log("Server started on 3000"));
