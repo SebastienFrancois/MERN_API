@@ -4,21 +4,11 @@ const morgan = require('morgan')
 const fs = require('fs')
 const WilderRouter = require('./src/wilder/wilder.router')
 const errorHandler = require('./utils/errorHandler')
-// const WilderModel = require("./models/Wilder");
-// const WilderControl = require("./controllers/WilderControl");
 
 const app = express()
 
 // Database connection
 connect()
-
-// const errorHandler = (error, req, res, next) => {
-//   res.status(error.status || 500).send({
-//       status: error.status || 500,
-//       message: error.message,
-//       stack: error.stack
-//   })
-// }
 
 const log = (req, res, next) => {
   console.log("You've just logged in !")

@@ -8,8 +8,8 @@ const getMany = async (req, res, next) => {
   const wilders = await wilderModel.find({}).exec()
   if (wilders.length <= 0) {
     return next({
-      status: '404',
-      message: 'No wilders registered on the server',
+      status: 418,
+      message: "I'm a teapot",
     })
   }
   res.status(200).send(wilders)
@@ -44,7 +44,14 @@ const updateOne = async (req, res, next) => {
     return next({ status: 400, message: 'Mauvaise requête' })
   }
   res.status(200).json({ data: updated })
+  const updateWilder = await wilderModel.findByIdAndUpdate(
+    {_id: req.params.id}, 
+    req.body,
+    {new: true}
+    )
+  res.status(200).json(updateWilder)
 }
+
 
 const removeOne = async (req, res, next) => {
   wilderInit()
