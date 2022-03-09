@@ -37,7 +37,7 @@ module.exports = {
   },
   delete: (req, res) => {
     const id = req.params.id;
-    const data = WilderModel.findByIdAndDelete(id);
+    const data = WilderModel.findByIdAndRemove(id);
 
     data
       .then((result) => {
