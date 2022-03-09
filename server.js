@@ -24,9 +24,5 @@ app.use(morgan("dev"));
 // Routes
 app.use('/api/wilder', WilderRouter);
 app.get("/", (req, res) => res.send({ message : "Hello World"}));
-// app.get("/api/wilder/read", WilderControl.retrieve);
-// app.post("/api/wilder/create", WilderControl.create);
-// app.put("/api/wilder/update", WilderControl.update);
-// app.delete("/api/wilder/:id/delete", WilderControl.delete);
 
 app.listen(5000, () => console.log("Server started on 5000"));
