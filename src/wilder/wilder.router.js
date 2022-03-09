@@ -19,8 +19,8 @@ router
 // /api/wilders/:id
 router
   .route('/:id')
-  .get(asyncHandler(wilderControler.getOne))
-  .put(asyncHandler(wilderControler.updateOne))
-  .delete(asyncHandler(wilderControler.removeOne))
+  .get(wilderControler.getOne)
+  .put(wilderControler.updateOne)
+  .delete(wilderControler.removeOne)
 
 module.exports = router
