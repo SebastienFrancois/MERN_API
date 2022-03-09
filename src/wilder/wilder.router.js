@@ -14,86 +14,59 @@ function runAsyncWrapper(callback) {
 }
 
 const getMany = async (req, res) => {
-  try {
-    wilderInit()
-    const wilders = await Wilder.find({}).exec()
-    res.status(200).send(wilders)
-  } catch ({ message: err }) {
-    console.error(err)
-    res.status(400).end()
-  }
+  wilderInit()
+  const wilders = await Wilder.find({}).exec()
+  res.status(200).send(wilders)
 }
 
-const getOne = async (req, res, next) => {
-  try {
-    wilderInit()
-    const wilder = await Wilder.findOne({ _id: req.params.id }).exec()
-    if (!wilder) {
-      return res.status(404).end()
-    }
-
-    res.status(200).send(wilder)
-  } catch ({ message: err }) {
-    next(err)
-    // console.error(err)
-    // res.status(400).end()
-  }
+const getOne = async (req, res) => {
+  wilderInit()
+  const wilder = await Wilder.findOne({ _id: req.params.id }, (err) =>
+    res.status(404).send('Not found')
+  ).exec()
+  res.status(200).send(wilder)
 }
 
-const createOne = async (req, res, next) => {
-  async function runAsync() {
-    wilderInit()
-    const datas = req.body
-    if (!datas.skills && !datas.name) {
-      return res.status(400).send({ error: 'Bad Request' }).end()
-    }
-    const wilder = await wilderModel.create({ ...datas })
-    res.status(201).send(wilder)
+const createOne = async (req, res) => {
+  wilderInit()
+  const datas = req.body
+  if (!datas.skills && !datas.name) {
+    return res.status(400).send({ error: 'Bad Request' }).end()
   }
-  runAsync().catch(next)
+  const wilder = await wilderModel.create({ ...datas })
+  res.status(201).send(wilder)
 }
 
 const updateOne = async (req, res) => {
-  try {
-    wilderInit();
-    const updated = wilderModel
-      .findOneAndUpdate({ _id: req.params.id }, req.body)
-      .exec()
-
-    if (!updated) {
-      return res.status(400).end()
-    }
-    res.status(200).json({ data: updated })
-  } catch (err) {
-    console.error(err)
-    res.status(400).send({ error: 'Bad request' }).end()
+  wilderInit()
+  const updated = wilderModel.findByIdAndUpdate(req.params.id, req.body).exec()
+  if (!updated) {
+    return res.status(400).end()
   }
+  res.status(200).json({ data: updated })
 }
 
 const removeOne = async (req, res) => {
-  try {
-    wilderInit();
-    const removed = await wilderModel
-      .findOneAndDelete({
-        _id: req.params.id,
-      })
-      .exec()
-
-    if (!removed) {
-      return res.status(400).send({ error: 'Bad request' }).end()
-    }
-
-    res.status(200).send({ message: 'Deleted with success' }).end()
-  } catch (err) {
-    console.log(err)
-    res.status(400).send({ error: 'Bad request' }).end()
+  wilderInit()
+  const removed = await wilderModel
+    .findOneAndDelete({
+      _id: req.params.id,
+    })
+    .exec()
+  if (!removed) {
+    return res.status(400).send({ error: 'Bad request' }).end()
   }
+  res.status(200).send({ message: 'Deleted with success' }).end()
 }
 
 // /api/wilders
-router.route('/').get(getMany).post(createOne)
+router.route('/').get(runAsyncWrapper(getMany)).post(runAsyncWrapper(createOne))
 
 // /api/wilders/:id
-router.route('/:id').get(getOne).put(updateOne).delete(removeOne)
+router
+  .route('/:id')
+  .get(runAsyncWrapper(getOne))
+  .put(runAsyncWrapper(updateOne))
+  .delete(runAsyncWrapper(removeOne))
 
 module.exports = router
