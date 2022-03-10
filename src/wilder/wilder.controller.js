@@ -1,4 +1,4 @@
-const { isEmpty } = require('lodash')
+const _ = require('lodash')
 const wilderModel = require('./wilder.model')
 
 const wilderInit = async () => await wilderModel.init()
@@ -37,21 +37,42 @@ const createOne = async (req, res, next) => {
 
 const updateOne = async (req, res, next) => {
   wilderInit()
-  const updated = wilderModel
-    .findByIdAndUpdate(req.params.id, req.body, { new: true })
-    .exec()
-  if (isEmpty(updated)) {
+  if (_.isEmpty(req.body)){
     return next({ status: 400, message: 'Mauvaise requête' })
   }
-  res.status(200).json({ data: updated })
-  const updateWilder = await wilderModel.findByIdAndUpdate(
-    {_id: req.params.id}, 
-    req.body,
-    {new: true}
-    )
+  
+  
+  const id = req.params.id
+  
+  const wilderInDB = await wilderModel.findOne({ _id: id })
+  
+  // Retrieve and update skills
+  if(req.body.skills){
+    const newSkills = req.body.skills
+    let wilderSkills = wilderInDB.skills
+    newSkills.forEach(e => {
+      wilderSkills = wilderSkills.filter(y => y.title !== e.title)
+      wilderSkills.push(e);
+    })
+    req.body.skills = wilderSkills;
+  }
+
+  // 2 manière de faire 
+  // 1 - retrieve
+  
+  // const wilder = await wilderModel.findOne({_id: id});
+  // wilder.skills = req.body.skills
+  // const updated = await wilder.save();
+  // return res.status(200).send(updated);
+  
+  // 2 - directly modify it in DB
+  
+  const updateWilder = await wilderModel
+  .findByIdAndUpdate({ _id: id }, req.body, { new: true })
+  .exec()
+  
   res.status(200).json(updateWilder)
 }
-
 
 const removeOne = async (req, res, next) => {
   wilderInit()
