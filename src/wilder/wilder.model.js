@@ -9,6 +9,7 @@ const WilderSchema = mongoose.Schema({
     enum: ['in progress', 'complete', 'not started'],
     default: 'in progress',
   },
+  description: String,
 })
 
 module.exports = mongoose.model('wilder', WilderSchema)

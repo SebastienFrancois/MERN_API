@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const mongoose = require('mongoose');
 const wilderModel = require('./wilder.model')
 
 const wilderInit = async () => await wilderModel.init()
@@ -28,7 +29,7 @@ const getOne = async (req, res, next) => {
 const createOne = async (req, res, next) => {
   wilderInit()
   const datas = req.body
-  if (!datas.skills && !datas.name) {
+  if (!datas.name) {
     return next({ status: 400, message: 'skills and name are required !' })
   }
   const wilder = await wilderModel.create({ ...datas })
@@ -37,40 +38,41 @@ const createOne = async (req, res, next) => {
 
 const updateOne = async (req, res, next) => {
   wilderInit()
-  if (_.isEmpty(req.body)){
+  if (_.isEmpty(req.body)) {
     return next({ status: 400, message: 'Mauvaise requête' })
   }
-  
-  
-  const id = req.params.id
-  
-  const wilderInDB = await wilderModel.findOne({ _id: id })
-  
-  // Retrieve and update skills
-  if(req.body.skills){
-    const newSkills = req.body.skills
-    let wilderSkills = wilderInDB.skills
-    newSkills.forEach(e => {
-      wilderSkills = wilderSkills.filter(y => y.title !== e.title)
-      wilderSkills.push(e);
-    })
-    req.body.skills = wilderSkills;
-  }
 
-  // 2 manière de faire 
+  const id = req.params.id;
+
+  // Retrieve and update skills
+  try {
+    const wilderInDB = await wilderModel.findOne({ _id: id }).exec()
+    if (req.body.skills) {
+      const newSkills = req.body.skills
+      let wilderSkills = wilderInDB.skills
+      newSkills.forEach((e) => {
+        wilderSkills = wilderSkills.filter((y) => y.title !== e.title)
+        wilderSkills.push(e)
+      })
+      req.body.skills = wilderSkills
+    }
+  } catch (err) {
+    return next({ status: 400, message: err })
+  }
+  // 2 manière de faire
   // 1 - retrieve
-  
+
   // const wilder = await wilderModel.findOne({_id: id});
   // wilder.skills = req.body.skills
   // const updated = await wilder.save();
   // return res.status(200).send(updated);
-  
+
   // 2 - directly modify it in DB
-  
+
   const updateWilder = await wilderModel
-  .findByIdAndUpdate({ _id: id }, req.body, { new: true })
-  .exec()
-  
+    .findByIdAndUpdate({ _id: id }, req.body, { new: true })
+    .exec()
+
   res.status(200).json(updateWilder)
 }
 

@@ -1,6 +1,7 @@
 const express = require('express')
 const connect = require('./utils/connect')
 const morgan = require('morgan')
+const cors = require('cors')
 const fs = require('fs')
 const WilderRouter = require('./src/wilder/wilder.router')
 const errorHandler = require('./utils/errorHandler')
@@ -15,6 +16,7 @@ const log = (req, res, next) => {
   next()
 }
 // Middleware
+app.use(cors())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(log)
