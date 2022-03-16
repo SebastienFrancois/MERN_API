@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express'
-import { WilderModel, Skill } from './wilder.model'
+import { WilderModel, Skill, Wilder as Iwilder } from './wilder.model'
 import _ from 'lodash'
 
 const getMany = async (req: Request, res: Response, next: NextFunction) => {
-  const wilders = await WilderModel.find({}).exec()
+  const wilders: Iwilder[] = await WilderModel.find({}).exec()
   if (wilders.length <= 0) {
     return next({
       status: 418,
@@ -15,7 +15,9 @@ const getMany = async (req: Request, res: Response, next: NextFunction) => {
 
 const getOne = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const wilder = await WilderModel.findOne({ _id: req.params.id }).exec()
+    const wilder: Iwilder | null = await WilderModel.findOne({
+      _id: req.params.id,
+    }).exec()
     return res.status(200).send(wilder)
   } catch (err) {
     return next({ status: 404, message: 'Not Found' })
@@ -27,7 +29,7 @@ const createOne = async (req: Request, res: Response, next: NextFunction) => {
   if (!datas.name) {
     return next({ status: 400, message: 'skills and name are required !' })
   }
-  const wilder = await WilderModel.create({ ...datas })
+  const wilder: Iwilder = await WilderModel.create({ ...datas })
   return res.status(201).send(wilder)
 }
 
@@ -42,7 +44,7 @@ const updateOne = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const wilderInDB = await WilderModel.findOne({ _id: id }).exec()
     if (req.body.skills && wilderInDB) {
-      const newSkills = req.body.skills
+      const newSkills: Skill[] = req.body.skills
       let wilderSkills = wilderInDB.skills || []
       newSkills.forEach((e: Skill) => {
         wilderSkills = wilderSkills.filter((y) => y.title !== e.title)
@@ -54,7 +56,7 @@ const updateOne = async (req: Request, res: Response, next: NextFunction) => {
     return next({ status: 400, message: err })
   }
 
-  const updateWilder = await WilderModel.findByIdAndUpdate(
+  const updateWilder: Iwilder | null = await WilderModel.findByIdAndUpdate(
     { _id: id },
     req.body,
     { new: true }

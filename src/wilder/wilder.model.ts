@@ -1,8 +1,8 @@
-import { Schema, model } from 'mongoose'
+import { Schema, model, Document } from 'mongoose'
 
 export type Skill = { title: string; votes: number }
 
-export interface Wilder {
+export interface Wilder extends Document {
   name: String
   city: String
   description: String
